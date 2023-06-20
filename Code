@@ -1,0 +1,212 @@
+
+import numpy as np # linear algebra
+import pandas as pd 
+import matplotlib.pyplot as plt
+import seaborn as sns
+df = pd.read_csv('/content/drive/MyDrive/microbes.csv')
+df.head()
+
+df.isnull().sum().sum()
+
+df.describe()
+
+y = df['microorganisms']
+y
+
+ip = list(df.columns)[:-1]
+ip
+
+x = df[ip]
+x
+#Scatter plot between solidity and eccentricity
+#figsize - set size of figure in inches
+#dpi - set the resolution in dots per inch
+plt.figure(figsize = (10, 8), dpi = 100)
+sns.scatterplot(data = df, x = 'Solidity', y = 'Eccentricity', hue = 'microorganisms')
+
+plt.figure(figsize = (11, 8), dpi = 100)
+t = df.copy()
+t['microorganisms'] = t['microorganisms'].astype('category')
+t['microorganisms'] = t['microorganisms'].cat.codes
+sns.heatmap(abs(t.corr()) > 0.75)
+
+from sklearn.preprocessing import PolynomialFeatures, StandardScaler
+from sklearn.decomposition import PCA
+from sklearn.pipeline import Pipeline
+
+X = df.drop('microorganisms', axis = 1)
+y = df['microorganisms']
+
+poly = PolynomialFeatures(degree = 3)
+pca = PCA(n_components = 15)
+sc = StandardScaler()
+combined_features = Pipeline([('poly', poly), ('sc', sc), ('pca', pca)])
+
+X_features = combined_features.fit(X, y).transform(X)
+cols = ['col1', 'col2', 'col3', 'col4', 'col5', 'col6', 'col7', 'col8', 'col9', 'col10', 'col11', 'col12', 'col13', 'col14', 'col15']
+X_new = pd.DataFrame(data = X_features, columns = cols)
+X_new.head()
+
+df_new = pd.concat([X_new, y], axis = 1)
+df_new['microorganisms'] = df_new['microorganisms'].astype('category')
+df_new['microorganisms'] = df_new['microorganisms'].cat.codes
+plt.figure(figsize = (11, 8), dpi = 100)
+sns.heatmap(df_new.corr())
+
+from sklearn.model_selection import train_test_split, GridSearchCV
+X_train, X_test, y_train, y_test = train_test_split(X_new, y)
+
+X_new.describe()
+
+from scipy import stats
+from imblearn.over_sampling import SMOTE
+
+from sklearn.metrics import confusion_matrix
+
+# display progress of loops
+
+from sklearn.preprocessing import StandardScaler
+from sklearn.model_selection import train_test_split, GridSearchCV
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
+from sklearn.neural_network import MLPClassifier
+from sklearn.model_selection import cross_val_score
+from sklearn.metrics import accuracy_score
+from sklearn.naive_bayes import GaussianNB
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.metrics import confusion_matrix, precision_score, recall_score, f1_score
+
+X_train, X_test, y_train, y_test = train_test_split(X, y,test_size=0.3,random_state=42 , shuffle=True)
+
+#Random Classifier Train
+rf = RandomForestClassifier()
+rf.fit(X_train, y_train)
+y_pred_train = rf.predict(X_train)
+accuracy = accuracy_score(y_train,y_pred_train)
+print(f'Accuracy: {round(accuracy * 100, 2)} %')
+
+y_pred = rf.predict(X_test)
+accuracy = accuracy_score(y_test, y_pred)
+conf_mat = confusion_matrix(y_test, y_pred)
+precision = precision_score(y_test, y_pred, average="macro")
+recall = recall_score(y_test, y_pred, average="macro")
+f1 = f1_score(y_test, y_pred, average="macro")
+print(f'Accuracy: {round(accuracy * 100, 2)} %')
+print(f'Precision: {round(precision * 100, 2)} %')
+print(f'Recall: {round(recall * 100, 2)} %')
+print(f'F1-score: {round(f1 * 100, 2)} %')
+
+#naive bayes accuracy
+clf = GaussianNB()
+clf.fit(X_train, y_train)
+y_pred_train = clf.predict(X_train)
+accuracy = accuracy_score(y_train,y_pred_train)
+print(f'Accuracy: {round(accuracy * 100, 2)} %')
+
+#Niave Bayes Test Accuracy
+y_pred = clf.predict(X_test)
+accuracy = accuracy_score(y_test, y_pred)
+conf_mat = confusion_matrix(y_test, y_pred)
+precision = precision_score(y_test, y_pred, average="macro")
+recall = recall_score(y_test, y_pred, average="macro")
+f1 = f1_score(y_test, y_pred, average="macro")
+print(f'Accuracy: {round(accuracy * 100, 2)} %')
+print(f'Precision: {round(precision * 100, 2)} %')
+print(f'Recall: {round(recall * 100, 2)} %')
+print(f'F1-score: {round(f1 * 100, 2)} %')
+
+#Decision Tree Trian 
+#decision Tree - splitting data set into small sub parts
+dt = DecisionTreeClassifier()
+dt.fit(X_train,y_train)
+y_pred_train = dt.predict(X_train)
+accuracy = accuracy_score(y_train,y_pred_train)
+print(f'Accuracy: {round(accuracy * 100, 2)} %')
+
+#decision tree test accuracy
+y_pred = dt.predict(X_test)
+accuracy = accuracy_score(y_test, y_pred)
+conf_mat = confusion_matrix(y_test, y_pred)
+precision = precision_score(y_test, y_pred, average="macro")
+recall = recall_score(y_test, y_pred, average="macro")
+f1 = f1_score(y_test, y_pred, average="macro")
+print(f'Accuracy: {round(accuracy * 100, 2)} %')
+print(f'Precision: {round(precision * 100, 2)} %')
+print(f'Recall: {round(recall * 100, 2)} %')
+print(f'F1-score: {round(f1 * 100, 2)} %')
+
+#kneighbors train accuracy - 
+knn = KNeighborsClassifier()
+knn.fit (X_train , y_train)
+y_pred_train = knn.predict(X_train)
+accuracy = accuracy_score(y_train,y_pred_train)
+print(f'Accuracy: {round(accuracy * 100, 2)} %')
+
+#Knn test accuracy
+y_pred = knn.predict(X_test)
+accuracy = accuracy_score(y_test, y_pred)
+conf_mat = confusion_matrix(y_test, y_pred)
+precision = precision_score(y_test, y_pred, average="macro")
+recall = recall_score(y_test, y_pred, average="macro")
+f1 = f1_score(y_test, y_pred, average="macro")
+print(f'Accuracy: {round(accuracy * 100, 2)} %')
+print(f'Precision: {round(precision * 100, 2)} %')
+print(f'Recall: {round(recall * 100, 2)} %')
+print(f'F1-score: {round(f1 * 100, 2)} %')
+
+algorithms = ['Random Forest', 'Naive Bayes', 'Decision Tree', 'K-NearestNeighbour']
+accuracy = [99.95, 89.09, 99.98, 99.95]
+precision = [99.92, 85.87, 99.93, 99.87]
+recall = [99.89, 87.7, 99.99, 99.95]
+f1 = [99.9, 86.01, 99.96, 99.91]
+
+
+fig, ax = plt.subplots()
+ax.set_title('Performance Comparison of Four Algorithms')
+#ax.set_xlabel('Metrics')
+#ax.set_ylabel('Score')
+#ax.set_xticks(range(4))
+#ax.set_xticklabels(['Precision', 'Accuracy', 'F1', 'Recall'])
+
+#fig, ax = plt.subplots()
+ax.bar([0, 1, 2, 3], precision, color='red', width=0.3, label='Precision')
+ax.bar([0.2, 1.2, 2.2, 3.2], accuracy, color='blue', width=0.3, label='Accuracy')
+ax.bar([0.4, 1.4, 2.4, 3.4], f1, color='green', width=0.3, label='F1')
+ax.bar([0.6, 1.6, 2.6, 3.6], recall, color='orange', width=0.3, label='Recall')
+ax.legend()
+plt.show()
+
+import fileinput
+for i in fileinput.input(files =(' microbes.gsheet')):
+  print(i)
+  
+from sklearn.preprocessing import LabelEncoder
+import numpy as np
+
+e = LabelEncoder()
+y = np.array(y)
+e.fit(y.reshape(-1, 1))
+
+y1 = e.transform(y.reshape(-1, 1))
+
+#from sklearn.linear_model import LinearRegression
+from sklearn.tree import DecisionTreeClassifier
+
+
+
+# Train a machine learning model on the entire dataset
+model = DecisionTreeClassifier()
+model.fit(x.values, y1)
+
+user_input = []
+for i in range(24):
+    user_input.append(float(input(f"Enter value for col{i+1}: ")))
+
+
+
+# Make a prediction for the user input
+user_prediction = model.predict([user_input])
+
+# Output the prediction
+print(user_prediction)
+print(e.inverse_transform([user_prediction]))
